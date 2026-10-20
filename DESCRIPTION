@@ -1,0 +1,28 @@
+Package: cleanser
+Title: Set of Utility Functions to Check, Clean and Prepare a dataset
+Version: 0.0.0.9000
+Authors@R: 
+    person("Alexis", "Bourgeois", , "acidybee@proton.me", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0009-8513-1715"))
+Description: The cleanser package helps to pre-process data before
+    analysis.  It intends to solve main parising problems, and automates
+    the cleaning and recoding phases of the data preparation.
+License: MIT + file LICENSE
+Imports: 
+    dplyr (>= 1.1.1),
+    lubridate (>= 1.5.0),
+    magrittr,
+    purrr (>= 1.0.0),
+    rlang (>= 1.0.0),
+    stringr,
+    tidyr (>= 1.0.0)
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: 
+    knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
