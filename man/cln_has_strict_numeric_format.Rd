@@ -4,7 +4,11 @@
 \alias{cln_has_strict_numeric_format}
 \title{Check if elements of a vector have a strict numeric format}
 \usage{
-cln_has_strict_numeric_format(string, negate = FALSE, decimal_sep = c(".", ","))
+cln_has_strict_numeric_format(
+  string,
+  negate = FALSE,
+  decimal_sep = c(".", ",")
+)
 }
 \arguments{
 \item{string}{Input vector. Either a character vector, or something
