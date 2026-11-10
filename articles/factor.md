@@ -41,7 +41,7 @@ observations qui sont problématiques…
 ## Fonction de détection de modalités spécifiques dans un vecteur
 
 L’élément de base de la partie du package dédiée au factor est la
-fonction `clr_detect_levels` qui détecte un jeu de modalités données
+fonction `cln_detect_levels` qui détecte un jeu de modalités données
 dans un vecteur. Cette fonction passe par des regex pour généraliser la
 recherche aux éventuels problèmes de case. A titre d’exemple, nous
 utilisons le vecteur ci-dessous, pour une recherche de modalités
@@ -71,7 +71,7 @@ C’est bien le comportement souhaité.
 ``` r
 
 ## Default: ignore_case = FALSE
-clr_detect_levels(vec, levels =  lvl)
+cln_detect_levels(vec, levels =  lvl)
 #> [1] FALSE  TRUE FALSE  TRUE FALSE FALSE    NA
 ```
 
@@ -84,7 +84,7 @@ argument `negate = TRUE`.
 ``` r
 
 ## negate = TRUE
-clr_detect_levels(vec, levels =  lvl, negate = TRUE)
+cln_detect_levels(vec, levels =  lvl, negate = TRUE)
 #> [1]  TRUE FALSE  TRUE FALSE  TRUE  TRUE    NA
 ```
 
@@ -96,7 +96,7 @@ La recherche peut être rendue case insensitive avec l’argument
 ``` r
 
 ## ignore_case = TRUE
-clr_detect_levels(vec, levels =  lvl, ignore_case = TRUE)
+cln_detect_levels(vec, levels =  lvl, ignore_case = TRUE)
 #> [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE    NA
 ```
 
@@ -104,7 +104,7 @@ clr_detect_levels(vec, levels =  lvl, ignore_case = TRUE)
 
 Le passage par les regex plutôt que la comparaison directe de chaines de
 character, introduit une complexité supplémentaire pour la gestion des
-character spéciaux dans les regex. La fonction `clr_detect_levels`
+character spéciaux dans les regex. La fonction `cln_detect_levels`
 échappe les character spéciaux avant de construire la regex…
 
 ``` r
@@ -113,14 +113,14 @@ character spéciaux dans les regex. La fonction `clr_detect_levels`
 vec <- c("+", "-", "Non", "non", "NON", "ouistiti", NA_character_)
 vec
 #> [1] "+"        "-"        "Non"      "non"      "NON"      "ouistiti" NA
-clr_detect_levels(vec, levels =  c("-", "+"))
+cln_detect_levels(vec, levels =  c("-", "+"))
 #> [1]  TRUE  TRUE FALSE FALSE FALSE FALSE    NA
 ```
 
 ## Application à la préparation d’un jeu de données
 
 La fonction
-[`clr_detect_levels()`](https://acidybee.github.io/cleanser/reference/clr_detect_levels.md)
+[`cln_detect_levels()`](https://acidybee.github.io/cleanser/reference/cln_detect_levels.md)
 est ensuite utilisée dans les outils du package pour la détection et le
 recodage au sein d’un jeu de données.
 
@@ -171,14 +171,15 @@ avec les colonnes répondant au critère (keep), ou n’y répondant pas
 ### Automated detection of variables with specific levels
 
 Lorsque les données à préparer sont issues d’une DB, la fonction
-`keep_col_w_levels` détecte les variables attendues. Sont éliminées les
-colonnes pour lesquelles il y a des typo, ou des problèmes de case.
+`cln_keep_col_with_levels` détecte les variables attendues. Sont
+éliminées les colonnes pour lesquelles il y a des typo, ou des problèmes
+de case.
 
 ``` r
 
 factor_dataset %>%
-  # keep_col_dummy()
-  keep_col_w_levels(levels = c("non", "oui"))
+  # cln_keep_col_dummy()
+  cln_keep_col_with_levels(levels = c("non", "oui"))
 #>    DB DB_w_na
 #> 1 oui     oui
 #> 2 non     non
@@ -188,14 +189,14 @@ factor_dataset %>%
 
 ### Inverted selection
 
-La sélection peut être inversée en utilisant `discard_col_w_levels`, qui
-élimine du jeu de données les variables qui répondent au critère, plutôt
-que de les conserver.
+La sélection peut être inversée en utilisant
+`cln_discard_col_with_levels`, qui élimine du jeu de données les
+variables qui répondent au critère, plutôt que de les conserver.
 
 ``` r
 
 factor_dataset %>%
-  discard_col_w_levels(levels = c("non", "oui"))
+  cln_discard_col_with_levels(levels = c("non", "oui"))
 #>   id dummy typo case sexe regex_spec
 #> 1  1     0  oui  OUI    F          +
 #> 2  2     0  non  Non    H          -
@@ -212,7 +213,7 @@ sont aussi des character, en utilisant le pipe suivant:
 
 factor_dataset %>%
   dplyr::select(dplyr::where(is.character)) %>%
-  discard_col_w_levels(levels = c("non", "oui"))
+  cln_discard_col_with_levels(levels = c("non", "oui"))
 #>   typo case sexe regex_spec
 #> 1  oui  OUI    F          +
 #> 2  non  Non    H          -
@@ -234,7 +235,7 @@ case correcte.
 ``` r
 
 factor_dataset %>%
-  keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE)
+  cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE)
 #>    DB case DB_w_na
 #> 1 oui  OUI     oui
 #> 2 non  Non     non
@@ -243,14 +244,15 @@ factor_dataset %>%
 ```
 
 Les colonnes avec problèmes de case peuvent alors être identifiées en
-cumulant les étapes `discard_col_w_levels(levels = c("non", "oui"))` et
-`keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE)`
+cumulant les étapes
+`cln_discard_col_with_levels(levels = c("non", "oui"))` et
+`cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE)`
 
 ``` r
 
 factor_dataset %>%
-  discard_col_w_levels(levels = c("non", "oui")) %>%
-  keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE)
+  cln_discard_col_with_levels(levels = c("non", "oui")) %>%
+  cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE)
 #>   case
 #> 1  OUI
 #> 2  Non
@@ -265,9 +267,9 @@ extraire directement les observations d’intérêt…
 ``` r
 
 factor_dataset %>%
-  discard_col_w_levels(levels = c("non", "oui")) %>%
-  keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE) %>%
-  dplyr::filter(dplyr::if_any(.cols = everything(), .fns = \(x) clr_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
+  cln_discard_col_with_levels(levels = c("non", "oui")) %>%
+  cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE) %>%
+  dplyr::filter(dplyr::if_any(.cols = everything(), .fns = \(x) cln_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
 #>   case
 #> 1  OUI
 #> 2  Non
@@ -281,10 +283,10 @@ dans le jeu de données:
 dplyr::bind_cols(
   dplyr::select(factor_dataset, id),
   factor_dataset %>%
-    discard_col_w_levels(levels = c("non", "oui")) %>%
-    keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE)
+    cln_discard_col_with_levels(levels = c("non", "oui")) %>%
+    cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE)
 ) %>%
-  dplyr::filter(dplyr::if_any(.cols = -id, .fns = \(x) clr_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
+  dplyr::filter(dplyr::if_any(.cols = -id, .fns = \(x) cln_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
 #>   id case
 #> 1  1  OUI
 #> 2  2  Non
@@ -296,8 +298,8 @@ discard:
 ``` r
 
 factor_dataset %>%
-  discard_col_w_levels(levels = c("non", "oui"), "id") %>%
-  keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE, "id")
+  cln_discard_col_with_levels(levels = c("non", "oui"), "id") %>%
+  cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE, "id")
 #>   id case
 #> 1  1  OUI
 #> 2  2  Non
@@ -311,9 +313,9 @@ problème:
 ``` r
 
 factor_dataset %>%
-  discard_col_w_levels(levels = c("non", "oui"), "id") %>%
-  keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE, "id") %>%
-  dplyr::filter(dplyr::if_any(.cols = -"id", .fns = \(x) clr_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
+  cln_discard_col_with_levels(levels = c("non", "oui"), "id") %>%
+  cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE, "id") %>%
+  dplyr::filter(dplyr::if_any(.cols = -"id", .fns = \(x) cln_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
 #>   id case
 #> 1  1  OUI
 #> 2  2  Non
@@ -326,14 +328,14 @@ NSE ne fonctionne pas.
 ``` r
 
 factor_dataset %>%
-  # keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE, id)
-  clr_extract_mismatch_w_levels_case(levels = c("non", "oui"), "id")
+  # cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE, id)
+  cln_extract_mismatch_with_levels_case(levels = c("non", "oui"), "id")
 #>   id case
 #> 1  1  OUI
 #> 2  2  Non
 ## La NSE ne fonctionne pas:
 # factor_dataset %>%
-#   clr_extract_mismatch_w_levels_case(levels = c("non", "oui"), id_cols = c(id, sexe))
+#   cln_extract_mismatch_with_levels_case(levels = c("non", "oui"), id_cols = c(id, sexe))
 ```
 
 ### Résolution des problèmes de typo
@@ -343,10 +345,10 @@ Il est possible de généraliser cette stratégie aux erreurs de typo:
 ``` r
 
 factor_dataset %>%
-  discard_col_w_levels(levels = c("non", "oui"), "id") %>%
-  discard_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE, "id") %>%
-  keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE, "id", fun = "any") %>%
-  dplyr::filter(dplyr::if_any(.cols = -"id", .fns = \(x) clr_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
+  cln_discard_col_with_levels(levels = c("non", "oui"), "id") %>%
+  cln_discard_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE, "id") %>%
+  cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE, "id", fun = "any") %>%
+  dplyr::filter(dplyr::if_any(.cols = -"id", .fns = \(x) cln_detect_levels(x, levels = c("non", "oui"), negate = TRUE)))
 #>   id typo
 #> 1  4  pui
 ```
@@ -356,7 +358,7 @@ factor_dataset %>%
 ``` r
 
 factor_dataset %>%
-  clr_extract_mismatch_w_levels_typo(levels = c("non", "oui"), "id")
+  cln_extract_mismatch_with_levels_typo(levels = c("non", "oui"), "id")
 #>   id typo
 #> 1  4  pui
 ```
@@ -373,7 +375,7 @@ systématiquement vrai pour les problèmes de typo…
 ``` r
 
 factor_dataset %>%
-  recode_col_w_levels(levels = c("non", "oui"), ignore_case = FALSE)
+  cln_recode_col_with_levels(levels = c("non", "oui"), ignore_case = FALSE)
 #>   id dummy  DB typo case sexe regex_spec DB_w_na na_only
 #> 1  1     0 oui  oui  OUI    F          +     oui    <NA>
 #> 2  2     0 non  non  Non    H          -     non    <NA>
@@ -402,7 +404,7 @@ Définition d’une fonction qui corrige la case pour un level unique:
 
 ## correction pour une modalité donnée:
 case %>%
-  cure_single_level_case("oui")
+  cln_fix_single_level_case("oui")
 #> [1] "oui" "Non" "non" "oui"
 ```
 
@@ -412,8 +414,8 @@ Composition manuelle de ces corrections individuelles:
 
 ## Etapes manuelles
 case %>%
-  cure_single_level_case("oui") %>%
-  cure_single_level_case("non")
+  cln_fix_single_level_case("oui") %>%
+  cln_fix_single_level_case("non")
 #> [1] "oui" "non" "non" "oui"
 ```
 
@@ -424,7 +426,7 @@ correction séquentielle de tous les niveaux:
 ``` r
 
 ## Automatisation avec purrr::reduce: correction séquentielle de tous les niveaux
-purrr::reduce(lvl, .f = \(x, y) cure_single_level_case(string = x, single_level = y), .init = case)
+purrr::reduce(lvl, .f = \(x, y) cln_fix_single_level_case(string = x, single_level = y), .init = case)
 #> [1] "oui" "non" "non" "oui"
 ```
 
@@ -435,7 +437,7 @@ qui prend le dataset en entrée:
 
 # Application au recodage des jeux de données: OK
 factor_dataset %>%
-  cure_col_w_levels_case(levels = c("non", "oui"))
+  cln_fix_col_with_levels_case(levels = c("non", "oui"))
 #>   id dummy  DB typo case sexe regex_spec DB_w_na na_only
 #> 1  1     0 oui  oui  oui    F          +     oui    <NA>
 #> 2  2     0 non  non  non    H          -     non    <NA>
@@ -450,7 +452,7 @@ l’argument `ignore_case = TRUE`:
 ``` r
 
 factor_dataset %>%
-  recode_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE)
+  cln_recode_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE)
 #>   id dummy  DB typo case sexe regex_spec DB_w_na na_only
 #> 1  1     0 oui  oui  oui    F          +     oui    <NA>
 #> 2  2     0 non  non  non    H          -     non    <NA>
@@ -464,7 +466,7 @@ Les labels peuvent aussi être modifiés par la fonction via l’argument
 ``` r
 
 factor_dataset %>%
-  recode_col_w_levels(levels = c("non", "oui"), labels = c("N", "O"), ignore_case = TRUE)
+  cln_recode_col_with_levels(levels = c("non", "oui"), labels = c("N", "O"), ignore_case = TRUE)
 #>   id dummy DB typo case sexe regex_spec DB_w_na na_only
 #> 1  1     0  O  oui    O    F          +       O    <NA>
 #> 2  2     0  N  non    N    H          -       N    <NA>
