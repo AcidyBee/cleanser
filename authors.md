@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/AcidyBee/cleanser/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/AcidyBee/cleanser/blob/main/DESCRIPTION)
 
 Bourgeois A (2026). *cleanser: Set of Utility Functions to Check, Clean
 and Prepare a dataset*. R package version 0.0.0.9000,
