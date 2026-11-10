@@ -37,7 +37,7 @@ expand.grid(
   g = c(NA_real_, 0, NA_real_),
   ptc = c(NA_real_, 0, 1)
 ) %>%
-  dplyr::mutate(is_na_score = compute_composite_score(g, ptc, na.rm = TRUE),
+  dplyr::mutate(is_na_score = cln_compute_composite_score(g, ptc, na.rm = TRUE),
     score_fun = "rowSums") %>%
   dplyr::arrange(g, ptc)
 #>    g ptc is_na_score score_fun

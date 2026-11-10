@@ -13,7 +13,7 @@
 ## 1. les colonne d'un même groupe ne partagent pas d'observations en commun: colonnes à unifier
 ## 2. les colonnes d'un même groupe partagent des observations en commun: colonnes au format large
 # ne fonctionne pas avec les pipes de R, mais fonctionne avec ceux de magritr
-# is_shared_values_across_rows <- function(.data, ...) {
+# cln_is_shared_values_across_rows <- function(.data, ...) {
 #   .data %>%
 #     dplyr::select(...) %>%
 #     is.na() %>%
@@ -38,10 +38,10 @@
 #'   ischemie_froide.1 = c(NA_real_, NA_real_, 720, 780),
 #'   ischemie_froide.2 = c(720, 780, NA_real_, NA_real_)
 #' ) %>%
-#'   is_shared_values_across_rows(dplyr::matches("^ischemie_froide"))
+#'   cln_is_shared_values_across_rows(dplyr::matches("^ischemie_froide"))
 # #' \dontrun{
 # #' }
-is_shared_values_across_rows <- function(.data, ...) {
+cln_is_shared_values_across_rows <- function(.data, ...) {
   .data  %>%
     dplyr::select(...) %>%
     is.na() %>%
@@ -52,12 +52,12 @@ is_shared_values_across_rows <- function(.data, ...) {
 }
 # ## Utilisation: OK
 # ## ... pour un groupe de variables
-# is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[1]))
-# is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[2]))
+# cln_is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[1]))
+# cln_is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[2]))
 # ## ... pour plusieurs groupes de variables avec un map
 # dup_groups_is_shared_across_rows <- dup_groups %>%
 #   rlang::set_names() %>%
-#   map_lgl(.f = ~ is_shared_values_across_rows(.data = df_greffe_patched, matches(paste0("^", .x))))
+#   map_lgl(.f = ~ cln_is_shared_values_across_rows(.data = df_greffe_patched, matches(paste0("^", .x))))
 # ## séparation des candidats au format large: une ligne donnée peut avoir des valeurs dans plusieurs colonnes du même groupe
 # ## on retrouve sans surprise maladie_initiale et complications
 # ## ttt_IS_1 est à la fois au format large et a un effet de millésime

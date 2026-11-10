@@ -89,8 +89,8 @@
 #' lib_raw = c("date evenement", "uti'l"),
 #' code = c("date_evt", "util")
 #' )
-#' create_lut_from_dictionary(dict, old = lib_raw, new = code)
-create_lut_from_dictionary <- function(dictionary, old, new) {
+#' cln_create_lut_from_dictionary(dict, old = lib_raw, new = code)
+cln_create_lut_from_dictionary <- function(dictionary, old, new) {
   lut <- dictionary %>% dplyr::pull({{ new }})
   names(lut) <- dictionary %>% dplyr::pull({{ old }})
   lut
@@ -121,12 +121,12 @@ create_lut_from_dictionary <- function(dictionary, old, new) {
 #'   `date evenement` = c("01/01/1974", "01/01/1989"),
 #'   `uti\'l` = c("oui", "non")
 #' )
-#' translate_from_dictionary(names(data), dict, lib_raw, code)
-#' dplyr::rename_with(data, .fn = \(x) translate_from_dictionary(x, dict, lib_raw, code))
+#' cln_translate_from_dictionary(names(data), dict, lib_raw, code)
+#' dplyr::rename_with(data, .fn = \(x) cln_translate_from_dictionary(x, dict, lib_raw, code))
 #' }
-translate_from_dictionary <- function(x, dictionary, old, new) {
-  lut <- create_lut_from_dictionary(dictionary, {{ old }}, {{ new }}) # ABM.tidyr:::
+cln_translate_from_dictionary <- function(x, dictionary, old, new) {
+  lut <- cln_create_lut_from_dictionary(dictionary, {{ old }}, {{ new }}) # ABM.tidyr:::
   lut[x]
-  # create_lut_from_dictionary(dictionary, {{ old }}, {{ new }})[x] # non-teste
+  # cln_create_lut_from_dictionary(dictionary, {{ old }}, {{ new }})[x] # non-teste
 }
 

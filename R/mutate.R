@@ -13,7 +13,7 @@
 #' @param data input dataset
 #'
 #' @returns dataset with the same properties as the input dataset, with the numeric columns automatically recoded as such,
-#' as long as the values of the vector correspond to a strict numeric scripture as intended in `has_strict_numeric_format`.
+#' as long as the values of the vector correspond to a strict numeric scripture as intended in `cln_has_strict_numeric_format`.
 # #' @importFrom dplyr mutate across all_of
 #' @export
 #'
@@ -23,10 +23,10 @@
 #' y = c(1, 0, 5, 3, 2, NA_real_),
 #' z = c("1", "0", "5,2", "3.5", "2E-2", NA_character_)
 #' ) %>%
-#'   recode_col_numeric()
-recode_col_numeric <- function(data) {
-  col_numeric <- keep_col_numeric(data) %>% names()
-  col_instant <- keep_col_instant(data) %>% names()
+#'   cln_recode_col_numeric()
+cln_recode_col_numeric <- function(data) {
+  col_numeric <- cln_keep_col_numeric(data) %>% names()
+  col_instant <- cln_keep_col_instant(data) %>% names()
   col_numeric_not_instant <- base::setdiff(col_numeric, col_instant)
   data %>%
     dplyr::mutate(dplyr::across(dplyr::all_of(col_numeric_not_instant), as.numeric))
@@ -35,9 +35,9 @@ recode_col_numeric <- function(data) {
 # ## recodage automatique des variables qui ont un format numeric attendu
 # df <- df %>%
 #   # pull(BMI.ABM) %>%
-#   # has_strict_numeric_format()
-#   # mutate(across(where(fn = ~all(has_strict_numeric_format(.x), na.rm = TRUE)), as.numeric))
-#   recode_col_numeric()
+#   # cln_has_strict_numeric_format()
+#   # mutate(across(where(fn = ~all(cln_has_strict_numeric_format(.x), na.rm = TRUE)), as.numeric))
+#   cln_recode_col_numeric()
 
 
 
@@ -62,10 +62,10 @@ recode_col_numeric <- function(data) {
 #'   g = c(NA_real_, 0, NA_real_),
 #'   ptc = c(NA_real_, 0, 1)
 #' ) %>%
-#'   dplyr::mutate(is_na_score = compute_composite_score(g, ptc, na.rm = TRUE),
+#'   dplyr::mutate(is_na_score = cln_compute_composite_score(g, ptc, na.rm = TRUE),
 #'     score_fun = "rowSums") %>%
 #'   dplyr::arrange(g, ptc)
-compute_composite_score <- function(..., na.rm = FALSE, score_fun = c("rowMeans", "rowSums")) {
+cln_compute_composite_score <- function(..., na.rm = FALSE, score_fun = c("rowMeans", "rowSums")) {
   score_fun <- match.arg(score_fun) %>% match.fun()
   # if( !is.logical(na.rm) ) {
   #   stop("na.rm is not of class 'logical' ; it has class '", class(na.rm), "'.")
@@ -90,11 +90,11 @@ compute_composite_score <- function(..., na.rm = FALSE, score_fun = c("rowMeans"
 #   ptc = c(NA, 0:3)#,
 #   # na.rm = c(TRUE, FALSE)
 # ) %>%
-#   # compute_composite_score()
+#   # cln_compute_composite_score()
 #   # mutate(MVI_share = classify_MVI_sup2(g, ptc, na.rm = FALSE)) %>%
 #   # mutate(C4d_pos = classify_C4d_pos(g, ptc, na.rm = FALSE)) %>%
-#   mutate(score_FALSE = compute_composite_score(g, ptc, na.rm = FALSE),
-#          score_TRUE = compute_composite_score(g, ptc, na.rm = TRUE)) %>%
+#   mutate(score_FALSE = cln_compute_composite_score(g, ptc, na.rm = FALSE),
+#          score_TRUE = cln_compute_composite_score(g, ptc, na.rm = TRUE)) %>%
 #   arrange(g, ptc)
 
 #' Validate and coerce na.rm to a single logical
@@ -169,8 +169,8 @@ validate_na_rm <- function(na.rm) {
 #'
 #' @examples
 #' # Round to nearest integer:
-#' round_to_nearest_integer(c(1.0, 2.1, 2.7, 5.7, NA_real_, NA))
-round_to_nearest_integer <- function(x) {
+#' cln_round_to_nearest_integer(c(1.0, 2.1, 2.7, 5.7, NA_real_, NA))
+cln_round_to_nearest_integer <- function(x) {
   as.integer(round(x))
 }
 
@@ -189,12 +189,12 @@ round_to_nearest_integer <- function(x) {
 #'
 #' @examples
 #' # Default quartile classification
-#' split_quantile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
+#' cln_split_quantile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
 #' # Default with na.rm = FALSE
 #' \dontrun{
-#' split_quantile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
+#' cln_split_quantile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
 #' }
-split_quantile <- function(x, labels = NULL, probs = seq(0, 1, 0.25), na.rm = FALSE,
+cln_split_quantile <- function(x, labels = NULL, probs = seq(0, 1, 0.25), na.rm = FALSE,
                            names = TRUE, type = 7, ...) {
   if (!is.numeric(x)) {
     stop("x argument has to be numeric for the classification")
@@ -209,7 +209,7 @@ split_quantile <- function(x, labels = NULL, probs = seq(0, 1, 0.25), na.rm = FA
 #'
 #' Split a numeric vector at the median
 #' @inheritParams purrr::partial
-#' @inheritParams split_quantile
+#' @inheritParams cln_split_quantile
 #'
 #' @returns a splited vector the same length as `x`
 # #' @importFrom purrr partial
@@ -217,18 +217,18 @@ split_quantile <- function(x, labels = NULL, probs = seq(0, 1, 0.25), na.rm = FA
 #'
 #' @examples
 #' # split at the median
-#' split_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
+#' cln_split_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
 #' # Default with na.rm = FALSE
 #' \dontrun{
-#' split_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
+#' cln_split_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
 #' }
-split_median <- purrr::partial(split_quantile, probs = c(0, 0.5, 1), labels = c("low", "high"))
+cln_split_median <- purrr::partial(cln_split_quantile, probs = c(0, 0.5, 1), labels = c("low", "high"))
 
 ## ****************************************************************************
 #' Classify a numeric vector at the median
 #'
 #' Classify a numeric vector at the median
-#' @inheritParams split_quantile
+#' @inheritParams cln_split_quantile
 #'
 #' @returns a vector the same length as x, with the 2 corresponding categories for a split at the median.
 # #' @importFrom stats quantile
@@ -236,20 +236,20 @@ split_median <- purrr::partial(split_quantile, probs = c(0, 0.5, 1), labels = c(
 #'
 #' @examples
 #' # split at the median
-#' classify_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
+#' cln_classify_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
 #' # Default with na.rm = FALSE
 #' \dontrun{
-#' classify_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
+#' cln_classify_median(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
 #' }
-classify_median <- function(x, labels = c("low", "high"), na.rm = TRUE) {
-  split_quantile(x = x, labels = labels, probs = c(0:2/2), na.rm = na.rm)
+cln_classify_median <- function(x, labels = c("low", "high"), na.rm = TRUE) {
+  cln_split_quantile(x = x, labels = labels, probs = c(0:2/2), na.rm = na.rm)
 }
 
 ## ****************************************************************************
 #' Classify a numeric vector in terciles
 #'
 #' Classify a numeric vector in tercile categories
-#' @inheritParams split_quantile
+#' @inheritParams cln_split_quantile
 #'
 #' @returns a vector the same length as x, with the 3 corresponding tercile categories.
 # #' @importFrom stats quantile
@@ -257,12 +257,12 @@ classify_median <- function(x, labels = c("low", "high"), na.rm = TRUE) {
 #'
 #' @examples
 #' # classify in terciles
-#' classify_tercile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
+#' cln_classify_tercile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
 #' # Default with na.rm = FALSE
 #' \dontrun{
-#' classify_tercile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
+#' cln_classify_tercile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
 #' }
-classify_tercile <- function(x, labels = c("low", "medium", "high"), na.rm = TRUE) {
+cln_classify_tercile <- function(x, labels = c("low", "medium", "high"), na.rm = TRUE) {
   # if (!is.numeric(x)) {
   #   stop("x argument has to be numeric for the classification")
   # }
@@ -271,15 +271,15 @@ classify_tercile <- function(x, labels = c("low", "medium", "high"), na.rm = TRU
   #     tertile_quantiles,
   #     include.lowest = T,
   #     labels = labels)
-  ## maj 2024-03-27: utilisation de la fonction générale: split_quantile
-  split_quantile(x = x, labels = labels, probs = c(0:3/3), na.rm = na.rm)
+  ## maj 2024-03-27: utilisation de la fonction générale: cln_split_quantile
+  cln_split_quantile(x = x, labels = labels, probs = c(0:3/3), na.rm = na.rm)
 }
 
 ## ****************************************************************************
 #' Classify a numeric vector in quartiles
 #'
 #' Classify a numeric vector in quartile categories
-#' @inheritParams split_quantile
+#' @inheritParams cln_split_quantile
 #'
 #' @returns a vector the same length as x, with the 4 corresponding quartile categories.
 # #' @importFrom stats quantile
@@ -287,13 +287,13 @@ classify_tercile <- function(x, labels = c("low", "medium", "high"), na.rm = TRU
 #'
 #' @examples
 #' # classify in quartiles
-#' classify_quartile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
+#' cln_classify_quartile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108))
 #' # Default with na.rm = FALSE
 #' \dontrun{
-#' classify_quartile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
+#' cln_classify_quartile(c(16, 18, 19, 26, 31, 36, 41, 12, 5, 3, 108, NA_real_))
 #' }
-classify_quartile <- function(x, labels = c("Q1", "Q2", "Q3", "Q4"), na.rm = TRUE) {
-  split_quantile(x = x, labels = labels, probs = c(0:4/4), na.rm = na.rm)
+cln_classify_quartile <- function(x, labels = c("Q1", "Q2", "Q3", "Q4"), na.rm = TRUE) {
+  cln_split_quantile(x = x, labels = labels, probs = c(0:4/4), na.rm = na.rm)
 }
 
 
@@ -315,8 +315,8 @@ classify_quartile <- function(x, labels = c("Q1", "Q2", "Q3", "Q4"), na.rm = TRU
 #'
 #' @examples
 #' # convert a human size from meters to cm
-#' convert_linear(c(1.50, 1.82, NA_real_), CF = 100)
-convert_linear <- function(x, CF, inverse = FALSE) {
+#' cln_convert_linear(c(1.50, 1.82, NA_real_), CF = 100)
+cln_convert_linear <- function(x, CF, inverse = FALSE) {
   if (!is.numeric(x)) {
     stop("x has to be numeric to be converted")
   }
@@ -337,14 +337,14 @@ convert_linear <- function(x, CF, inverse = FALSE) {
 ## ****************************************************************************
 ## Composition de la fonction logique OR
 # ## Fonction qui peut prendre un nombre indéfini d'arguments en entrée
-# compose_logical_OR <- function(...) {
+# cln_compose_logical_or <- function(...) {
 #   purrr::reduce(.x = list(...), .f = `|`)
 # }
-# # compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE))
-# # compose_logical_OR(c(0, 1, FALSE, TRUE, NA))
-# # compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F))
+# # cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE))
+# # cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA))
+# # cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F))
 
-# compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F))
+# cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F))
 #' Compute the OR logical composition of any number of vectors
 #'
 #' Fonction obtenue à partir de \code{base::Reduce} (pas d'appel à des libraries extérieures)
@@ -355,25 +355,25 @@ convert_linear <- function(x, CF, inverse = FALSE) {
 #' @export
 #'
 #' @examples
-#' compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(0, 1, FALSE, TRUE, NA))
+#' cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(0, 1, FALSE, TRUE, NA))
 #' \dontrun{
-#' compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE))
-#' compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F))
-#' compose_logical_OR(c("a", 1, FALSE, TRUE, NA))
+#' cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE))
+#' cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F))
+#' cln_compose_logical_or(c("a", 1, FALSE, TRUE, NA))
 #' }
-compose_logical_OR <- function(...) {
+cln_compose_logical_or <- function(...) {
   base::Reduce(f = base::`|`, x = base::list(...), init = FALSE) # le default init = FALSE permet une vérification automatique des types d'entrée compatibles
 }
 
 # compute_composite_logical <- function(..., f = c("|", "&")) {
-# # compose_logical_OR <- function(..., f = c(`|`, `&`)) {
+# # cln_compose_logical_or <- function(..., f = c(`|`, `&`)) {
 #   # f <- match.arg(f)
 #   base::Reduce(f = match.arg(f), x = base::list(...))
 #   # base::Reduce(f = match.fun(f), x = base::list(...))
 # }
-# compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE))
+# cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE))
 # compute_composite_logical(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), f = c("&"))
-# compose_logical_OR(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), f = `&`)
+# cln_compose_logical_or(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), f = `&`)
 
 #' Compute the AND logical composition of any number of vectors
 #'
@@ -385,20 +385,20 @@ compose_logical_OR <- function(...) {
 #' @export
 #'
 #' @examples
-#' compose_logical_AND(c(0, 1, FALSE, TRUE, NA), c(0, 1, FALSE, TRUE, NA))
+#' cln_compose_logical_and(c(0, 1, FALSE, TRUE, NA), c(0, 1, FALSE, TRUE, NA))
 # #' \dontrun{
-#' try(compose_logical_AND(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE)))
-#' try(compose_logical_AND(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F)))
-#' try(compose_logical_AND(c("a", 1, FALSE, TRUE, NA)))
+#' try(cln_compose_logical_and(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE)))
+#' try(cln_compose_logical_and(c(0, 1, FALSE, TRUE, NA), c(F, T, F, FALSE, TRUE), c(NA, F, T, F, F)))
+#' try(cln_compose_logical_and(c("a", 1, FALSE, TRUE, NA)))
 # #' }
-compose_logical_AND <- function(...) {
+cln_compose_logical_and <- function(...) {
   base::Reduce(f = base::`&`, x = base::list(...), init = TRUE) # le default init = TRUE permet une vérification automatique des types d'entrée compatibles
 }
 
 ## ****************************************************************************
 ## Repère les lignes qui contiennent les valeurs manquantes pour un jeu de variable donné
 ## La fonction is_na_component prend les même arguments que le score créé par
-## compute_composite_score ou bien compose_logical_OR au sein de l'ellipse
+## cln_compute_composite_score ou bien cln_compose_logical_or au sein de l'ellipse
 ## et retourne un vecteur de logical indiquant si une observation contient une (ou plusieurs) NA
 #' Computes the number of NAs per row in a set of columns
 #'
@@ -413,9 +413,9 @@ compose_logical_AND <- function(...) {
 #'   g = c(NA_real_, 0, NA_real_),
 #'   ptc = c(NA_real_, 0, 1)
 #' ) %>%
-#'   dplyr::mutate(na_score = compute_na_score(g, ptc)) %>%
+#'   dplyr::mutate(na_score = cln_compute_na_score(g, ptc)) %>%
 #'   dplyr::arrange(g, ptc)
-compute_na_score <- function(...) {
+cln_compute_na_score <- function(...) {
   args <- list(...) %>%
     lapply(as.character) %>%
     as.data.frame()

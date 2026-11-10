@@ -9,9 +9,9 @@
 #' Check if a vector is only NA elements
 #'
 #' Check if a vector is only NA elements. This function has 2 direct applications on data structures in the package:
-#' 1. spot empty columns using data %>% purrr::keep(\(x) is_only_na(x)) %>% names()
-#' 1.b it could be used in function `discard_empty_col`, even though it is not the case yet
-#' 2. get an accurate result when spoting col types, like for instance in the `keep_col_numeric` function:
+#' 1. spot empty columns using data %>% purrr::keep(\(x) cln_is_only_na(x)) %>% names()
+#' 1.b it could be used in function `cln_discard_col_empty`, even though it is not the case yet
+#' 2. get an accurate result when spoting col types, like for instance in the `cln_keep_col_numeric` function:
 #'   columns with only NA will otherwise return o positive result...
 #' @param x a vector of any type
 #'
@@ -20,17 +20,17 @@
 #'
 #' @examples
 #' c(1, 7, NA_real_) %>%
-#'   is_only_na()
+#'   cln_is_only_na()
 #' c(NA_real_, NA_real_, NA_real_) %>%
-#'   is_only_na()
+#'   cln_is_only_na()
 #' data.frame(
 #'  num = c(1, 2),
 #'  char = c("a", NA_character_),
 #'  na_col = rep(NA_real_, times = 2)
 #' ) %>%
-#'  purrr::keep(\(x) is_only_na(x)) %>%
+#'  purrr::keep(\(x) cln_is_only_na(x)) %>%
 #'  names()
-is_only_na <- function(x) {
+cln_is_only_na <- function(x) {
   sum(is.na(x)) == length(x)
   ## alternative rlang ne fonctionne pas pour une colonne de dataframe qui a une longueur donnee
   ## length(x) == 0
@@ -61,16 +61,16 @@ is_only_na <- function(x) {
 #' @examples
 #' \dontrun{
 #' data_D_raw %>%
-#'   discard_empty_col()
+#'   cln_discard_col_empty()
 #' }
-discard_empty_col <- function(data) {
+cln_discard_col_empty <- function(data) {
   data %>%
     dplyr::select(dplyr::where(
       \(x) sum(is.na(x)) != NROW(data)
     ))
 }
 # ## Colonnes conservées: OK
-# test <- discard_empty_col(df_raw)
+# test <- cln_discard_col_empty(df_raw)
 # ## colonnes éliminées: OK
 # test_comp <- df_raw[, !(names(df_raw) %in% names(test))]
 
@@ -86,9 +86,9 @@ discard_empty_col <- function(data) {
 #' @examples
 #' \dontrun{
 #' data_D_raw %>%
-#'   keep_empty_col()
+#'   cln_keep_col_empty()
 #' }
-keep_empty_col <- function(data) {
+cln_keep_col_empty <- function(data) {
   data %>%
     dplyr::select(dplyr::where(
       \(x) sum(is.na(x)) == NROW(data)
@@ -97,7 +97,7 @@ keep_empty_col <- function(data) {
 
 
 ## ****************************************************************************
-## Cette fonction s'appelle maintenant is_only_na()...
+## Cette fonction s'appelle maintenant cln_is_only_na()...
 ## mais les applications à la détectioin des colonnes vides sont tjs d'actualité...
 ## Si on veut pouvoir vérifier les colonnes rejetées
 ## aussi bien que de sélectionner uniquement les colonnes conservées
@@ -117,7 +117,7 @@ keep_empty_col <- function(data) {
 ## purrr::keep(df_raw, is_empty) %>% names()
 ## 2. Elimination des colonnes vides: 2 méthodes
 ## soit df_clean <- df_raw %>% purrr::discard(is_empty)
-## soit df_clean <- df_raw %>% discard_empty_col()
+## soit df_clean <- df_raw %>% cln_discard_col_empty()
 
 
 ## ****************************************************************************
@@ -133,12 +133,12 @@ keep_empty_col <- function(data) {
 # df_raw_col %>%
 #   mutate(across(everything(), as.character)) %>%
 #                 rowwise() %>%
-#   mutate(is_empty_row = sum(is.na(
+#   mutate(cln_is_row_empty = sum(is.na(
 #     c_across(everything())
 #   )) == NCOL(df_raw_col)) %>%
-#   select(NOM, is_empty_row)
+#   select(NOM, cln_is_row_empty)
 ## maj 2022-09-20: fonction généralisée...
-# is_empty_row <- function(data) {
+# cln_is_row_empty <- function(data) {
 #   data %>%
 #     # le compte des NA par ligne ne semble fonctionner que
 #     # si toutes les colonnes ont le même type
@@ -149,7 +149,7 @@ keep_empty_col <- function(data) {
 #     )) == NCOL(data)) %>%
 #     pull(empty_row)
 # }
-# is_empty_row(df_raw_col) %>% sum()
+# cln_is_row_empty(df_raw_col) %>% sum()
 
 ## Généralisation pour voir si un groupe de colonnes est totalement vide:
 ## fonctionne avec les {{...
@@ -173,16 +173,16 @@ keep_empty_col <- function(data) {
 #'   b = c("a", "b", NA_character_, "d")
 #'   )
 #' # is there an empty row for the whole data
-#' is_empty_row(data)
+#' cln_is_row_empty(data)
 #' # discard empty row for the whole data
-#' data[!is_empty_row(data), ]
+#' data[!cln_is_row_empty(data), ]
 #' # is there an empty row for a subset of columns a & b
-#' is_empty_row(data, .cols = c(a, b))
+#' cln_is_row_empty(data, .cols = c(a, b))
 #' # keep empty rows for a subset of columns a & b
-#' data[is_empty_row(data, .cols = c(a, b)), ]
+#' data[cln_is_row_empty(data, .cols = c(a, b)), ]
 #' # keep only the non-empty rows
-#' data[!is_empty_row(data, .cols = c(a, b)), ]
-is_empty_row <- function(data, .cols = dplyr::everything()) {
+#' data[!cln_is_row_empty(data, .cols = c(a, b)), ]
+cln_is_row_empty <- function(data, .cols = dplyr::everything()) {
   length_considered <- data %>%
     dplyr::select({{ .cols }}) %>%
     NCOL()
@@ -198,16 +198,16 @@ is_empty_row <- function(data, .cols = dplyr::everything()) {
 }
 
 # test <- df_raw_col %>%
-#   filter(!is_empty_row(.))
+#   filter(!cln_is_row_empty(.))
 ## ou pour les identifier
 # test <- df_raw_col %>%
-#   filter(is_empty_row(.))
+#   filter(cln_is_row_empty(.))
 #
 #' Discard empty rows
 #'
 #' Discard empty rows for a subset of columns which defaults to everything() (i.e. the whole dataset);
 #' but which can be restricted to a subset of columns.
-#' @inheritParams is_empty_row
+#' @inheritParams cln_is_row_empty
 #'
 #' @returns a data frame with the same number of columns as the imput data, but without the empty rows that were discarded.
 # #' @importFrom dplyr everything
@@ -220,14 +220,14 @@ is_empty_row <- function(data, .cols = dplyr::everything()) {
 #'   b = c("a", "b", NA_character_, "d")
 #'   )
 #' # discard empty row for the whole data
-#' discard_empty_row(data)
+#' cln_discard_row_empty(data)
 #' # discard empty row for a subset of columns a & b
-#' discard_empty_row(data, .cols = c(a, b))
-discard_empty_row <- function(data, .cols = dplyr::everything()) {
-  data[!is_empty_row(data, {{ .cols }}), ]
-  # filter(data, !is_empty_row(.))
+#' cln_discard_row_empty(data, .cols = c(a, b))
+cln_discard_row_empty <- function(data, .cols = dplyr::everything()) {
+  data[!cln_is_row_empty(data, {{ .cols }}), ]
+  # filter(data, !cln_is_row_empty(.))
 }
-# test <- discard_empty_row(df_raw_col)
+# test <- cln_discard_row_empty(df_raw_col)
 
 # # pour un vecteur peut importe le type des élément,
 # # le comptage des NA peut se faire sans pb
@@ -239,17 +239,17 @@ discard_empty_row <- function(data, .cols = dplyr::everything()) {
 ## 1. Détection des lignes vides: ajout d'un identifiant de ligne
 # df_raw %>%
 #   mutate(row_id = row_number()) %>% # identifiant de ligne
-#   filter(is_empty_row(df_raw)) %>%
+#   filter(cln_is_row_empty(df_raw)) %>%
 #   select(row_id, 1:7)
 ## 2. Elimination des lignes vides: 2 méthodes
-## df_clean <- df_raw %>% discard_empty_row()
-## df_clean <- df_raw %>% filter(!is_empty_row(.))
+## df_clean <- df_raw %>% cln_discard_row_empty()
+## df_clean <- df_raw %>% filter(!cln_is_row_empty(.))
 
 #' Keep empty rows
 #'
 #' Keep empty rows for a subset of columns which defaults to everything() (i.e. the whole dataset);
 #' but which can be restricted to a subset of columns.
-#' @inheritParams is_empty_row
+#' @inheritParams cln_is_row_empty
 #'
 #' @returns a data frame with the same number of columns as the imput data, but keeping only the empty rows that were spoted.
 # #' @importFrom dplyr everything
@@ -262,16 +262,16 @@ discard_empty_row <- function(data, .cols = dplyr::everything()) {
 #'   b = c("a", "b", NA_character_, "d")
 #'   )
 #' # keep empty row for the whole data
-#' keep_empty_row(data)
+#' cln_keep_row_empty(data)
 #' # keep empty row for a subset of columns a & b
-#' keep_empty_row(data, .cols = c(a, b))
-keep_empty_row <- function(data, .cols = dplyr::everything()) {
-  data[is_empty_row(data, {{ .cols }}), ]
+#' cln_keep_row_empty(data, .cols = c(a, b))
+cln_keep_row_empty <- function(data, .cols = dplyr::everything()) {
+  data[cln_is_row_empty(data, {{ .cols }}), ]
 }
 
 
 # ## ****************************************************************************
 # ## Elimination séquentielle des colonnes vides et des lignes vides
 # df_clean <- df_raw %>%
-#   discard_empty_col() %>%
-#   discard_empty_row()
+#   cln_discard_col_empty() %>%
+#   cln_discard_row_empty()

@@ -13,7 +13,7 @@
 ## 1. les colonne d'un même groupe ne partagent pas d'observations en commun: colonnes à unifier
 ## 2. les colonnes d'un même groupe partagent des observations en commun: colonnes au format large
 # ne fonctionne pas avec les pipes de R, mais fonctionne avec ceux de magritr
-# is_shared_values_across_rows <- function(.data, ...) {
+# cln_is_shared_values_across_rows <- function(.data, ...) {
 #   .data %>%
 #     dplyr::select(...) %>%
 #     is.na() %>%
@@ -38,10 +38,10 @@
 #'   ischemie_froide.1 = c(NA_real_, NA_real_, 720, 780),
 #'   ischemie_froide.2 = c(720, 780, NA_real_, NA_real_)
 #' ) %>%
-#'   is_shared_values_across_rows(dplyr::matches("^ischemie_froide"))
+#'   cln_is_shared_values_across_rows(dplyr::matches("^ischemie_froide"))
 # #' \dontrun{
 # #' }
-is_shared_values_across_rows <- function(.data, ...) {
+cln_is_shared_values_across_rows <- function(.data, ...) {
   .data  %>%
     dplyr::select(...) %>%
     is.na() %>%
@@ -52,12 +52,12 @@ is_shared_values_across_rows <- function(.data, ...) {
 }
 # ## Utilisation: OK
 # ## ... pour un groupe de variables
-# is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[1]))
-# is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[2]))
+# cln_is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[1]))
+# cln_is_shared_values_across_rows(df_greffe_patched, matches(dup_groupes[2]))
 # ## ... pour plusieurs groupes de variables avec un map
 # dup_groups_is_shared_across_rows <- dup_groups %>%
 #   rlang::set_names() %>%
-#   map_lgl(.f = ~ is_shared_values_across_rows(.data = df_greffe_patched, matches(paste0("^", .x))))
+#   map_lgl(.f = ~ cln_is_shared_values_across_rows(.data = df_greffe_patched, matches(paste0("^", .x))))
 # ## séparation des candidats au format large: une ligne donnée peut avoir des valeurs dans plusieurs colonnes du même groupe
 # ## on retrouve sans surprise maladie_initiale et complications
 # ## ttt_IS_1 est à la fois au format large et a un effet de millésime
@@ -95,7 +95,7 @@ is_shared_values_across_rows <- function(.data, ...) {
 #' @export
 #'
 #' @examples
-#' clr_left_join_fuzzy_date(
+#' cln_left_join_fuzzy_date(
 #' data.frame(
 #'   id = 1:5,
 #'   sexe = c("F", "H", "F", "F", "H"),
@@ -111,7 +111,7 @@ is_shared_values_across_rows <- function(.data, ...) {
 #'   DB = c("oui", "non", "non", "oui", NA_character_)
 #' ), by_date_x = "date_nais", by_not_fuzzy = "id"
 #' )
-clr_left_join_fuzzy_date <- function(x, y, by_date_x, by_date_y = by_date_x, by_not_fuzzy = NULL, suffix = c(".x", ".y"),
+cln_left_join_fuzzy_date <- function(x, y, by_date_x, by_date_y = by_date_x, by_not_fuzzy = NULL, suffix = c(".x", ".y"),
                                      num = 1, units = "days") { # default: 1 jour
   dplyr::left_join(
     x,
@@ -157,8 +157,8 @@ clr_left_join_fuzzy_date <- function(x, y, by_date_x, by_date_y = by_date_x, by_
 #'   DB_w_na = c("oui", "non", "non", NA_character_),
 #'   na_only = rep(NA_character_, times = 4)
 #' ) %>%
-#'  clr_extract_mismatch_2cols(DB, case, id_cols = "id")
-clr_extract_mismatch_2cols <- function(data, x, y, id_cols = NULL) {
+#'  cln_extract_mismatch_2cols(DB, case, id_cols = "id")
+cln_extract_mismatch_2cols <- function(data, x, y, id_cols = NULL) {
   # dots <- rlang::ensyms(...)
   # if (length(dots) != 2L) {
   #   stop("Only 2 by 2 comparison is possible: check there are only two variables as input for the ellipsis arguments.")
@@ -178,7 +178,7 @@ clr_extract_mismatch_2cols <- function(data, x, y, id_cols = NULL) {
 #' Extract Rows that Do Not Match for a 2 Columns Comparison
 #'
 #' Extract rows that do not match for a 2 columns comparison.
-#' @inheritParams clr_extract_mismatch_2cols
+#' @inheritParams cln_extract_mismatch_2cols
 #' @inheritParams dplyr::left_join
 #' @param id_cols <tidy-select> A set of columns that uniquely identify each observation. Typically used when you have to detect rows that don't behave as expected.
 #'
@@ -201,8 +201,8 @@ clr_extract_mismatch_2cols <- function(data, x, y, id_cols = NULL) {
 #'   DB_w_na = c("oui", "non", "non", NA_character_),
 #'   na_only = rep(NA_character_, times = 4)
 #' ) %>%
-#'  clr_extract_mismatch_2cols(DB, case, id_cols = "id")
-clr_map_mismatch_cols_w_suffix <- function(data, suffix = c(".x", ".y"), id_cols = NULL) {
+#'  cln_extract_mismatch_2cols(DB, case, id_cols = "id")
+cln_map_mismatch_cols_with_suffix <- function(data, suffix = c(".x", ".y"), id_cols = NULL) {
   # suffix_regex <- paste0("(?:", paste(stringa::stra_transform_to_regex_pattern(suffix), collapse = "|"), ")$")
   suffix_regex <- paste0("(?:", paste(stringr::str_escape(suffix), collapse = "|"), ")$")
   # print(names(data))
@@ -223,7 +223,7 @@ clr_map_mismatch_cols_w_suffix <- function(data, suffix = c(".x", ".y"), id_cols
   #   unique()
   prefix_to_check %>%
     purrr::set_names() %>%
-    purrr::map(\(x) clr_extract_mismatch_2cols(data,
+    purrr::map(\(x) cln_extract_mismatch_2cols(data,
                                                !!rlang::sym(paste0(x, suffix[[1]])),
                                                !!rlang::sym(paste0(x, suffix[[2]])),
                                                id_cols = id_cols

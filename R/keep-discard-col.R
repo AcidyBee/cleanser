@@ -21,7 +21,7 @@
 #' Keep columns with a strict numeric format
 #' @param data entry dataset
 #'
-#' @returns A selection of columns from the input dataset that have a strict numeric format, as intended in `has_strict_numeric_format()`.
+#' @returns A selection of columns from the input dataset that have a strict numeric format, as intended in `cln_has_strict_numeric_format()`.
 # #' @importFrom purrr set_names map_lgl keep
 # #' @importFrom lubridate is.instant
 #' @export
@@ -36,14 +36,14 @@
 #'  na_col = rep(NA_real_, times = 2),
 #'  date = lubridate::make_date(year = c(2019L, 2021L))
 #' ) %>%
-#'  keep_col_numeric()
-keep_col_numeric <- function(data) {
+#'  cln_keep_col_numeric()
+cln_keep_col_numeric <- function(data) {
   names(data) %>%
     purrr::set_names() %>%
     purrr::map_lgl(~(
-      (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
-        # (all(has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
-        (all(has_strict_numeric_format(data[[.x]]), na.rm = TRUE) & !lubridate::is.instant(.x) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
+      (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+        # (all(cln_has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
+        (all(cln_has_strict_numeric_format(data[[.x]]), na.rm = TRUE) & !lubridate::is.instant(.x) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
     purrr::keep(.p = ~.x == TRUE)
 }
 ## maj 2023-06-21: les colonnes numériques qui doivent être recodées automatiquement ne doivent pas être du type instant
@@ -53,7 +53,7 @@ keep_col_numeric <- function(data) {
 #' Discard columns with a strict numeric format
 #' @param data input dataset
 #'
-#' @returns A selection of columns from the input dataset that have a strict numeric format, as intended in `has_strict_numeric_format()`.
+#' @returns A selection of columns from the input dataset that have a strict numeric format, as intended in `cln_has_strict_numeric_format()`.
 # #' @importFrom purrr set_names map_lgl discard
 # #' @importFrom lubridate is.instant
 #' @export
@@ -68,14 +68,14 @@ keep_col_numeric <- function(data) {
 #'  na_col = rep(NA_real_, times = 2),
 #'  date = lubridate::make_date(year = c(2019L, 2021L))
 #' ) %>%
-#'  discard_col_numeric()
-discard_col_numeric <- function(data) {
+#'  cln_discard_col_numeric()
+cln_discard_col_numeric <- function(data) {
   names(data) %>%
     purrr::set_names() %>%
     purrr::map_lgl(~(
-      (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
-        # (all(has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
-        (all(has_strict_numeric_format(data[[.x]]), na.rm = TRUE) & !lubridate::is.instant(.x) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
+      (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+        # (all(cln_has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
+        (all(cln_has_strict_numeric_format(data[[.x]]), na.rm = TRUE) & !lubridate::is.instant(.x) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
     purrr::discard(.p = ~.x == TRUE)
 }
 
@@ -106,12 +106,12 @@ discard_col_numeric <- function(data) {
 #'  na_col = rep(NA_real_, times = 2),
 #'  date = lubridate::make_date(year = c(2019L, 2021L))
 #' ) %>%
-#'  keep_col_instant()
-keep_col_instant <- function(data) {
+#'  cln_keep_col_instant()
+cln_keep_col_instant <- function(data) {
   names(data) %>%
     purrr::set_names() %>%
     purrr::map_lgl(~(
-      (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+      (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
         (lubridate::is.instant(data[[.x]]) )) ) %>% ## on veut des éléments tous "instant"
     purrr::keep(.p = ~.x == TRUE)
 }
@@ -136,12 +136,12 @@ keep_col_instant <- function(data) {
 #'  na_col = rep(NA_real_, times = 2),
 #'  date = lubridate::make_date(year = c(2019L, 2021L))
 #' ) %>%
-#'  discard_col_instant()
-discard_col_instant <- function(data) {
+#'  cln_discard_col_instant()
+cln_discard_col_instant <- function(data) {
   names(data) %>%
     purrr::set_names() %>%
     purrr::map_lgl(~(
-      (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+      (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
         (lubridate::is.instant(data[[.x]]) )) ) %>% ## on veut des éléments tous "instant"
     purrr::discard(.p = ~.x == TRUE)
 }
@@ -150,7 +150,7 @@ discard_col_instant <- function(data) {
 ## ****************************************************************************
 ## Dummy
 ## ----------------------------------------------------------------------------
-## TODO: pour l'instant, keep_col_dummy sélectionne aussi les colonnes vides
+## TODO: pour l'instant, cln_keep_col_dummy sélectionne aussi les colonnes vides
 
 
 #' Keep dummy columns
@@ -171,9 +171,9 @@ discard_col_instant <- function(data) {
 #'  factor = c("non", "oui"),
 #'  na_col = rep(NA_real_, times = 2)
 #' ) %>%
-#'  keep_col_dummy()
-keep_col_dummy <- function(data) {
-  dplyr::select(data, dplyr::where(is_dummy))
+#'  cln_keep_col_dummy()
+cln_keep_col_dummy <- function(data) {
+  dplyr::select(data, dplyr::where(cln_is_dummy))
 }
 
 #' Discard dummy columns
@@ -193,7 +193,7 @@ keep_col_dummy <- function(data) {
 #'  char = c("a", NA_character_),
 #'  na_col = rep(NA_real_, times = 2)
 #' ) %>%
-#'  discard_col_dummy()
-discard_col_dummy <- function(data) {
-  dplyr::select(data, !dplyr::where(is_dummy))
+#'  cln_discard_col_dummy()
+cln_discard_col_dummy <- function(data) {
+  dplyr::select(data, !dplyr::where(cln_is_dummy))
 }
