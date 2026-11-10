@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/AcidyBee/cleanser/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AcidyBee/cleanser/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of cleanser is to gather a Set of Utility Functions to Check,
