@@ -9,7 +9,7 @@
 #' Check if elements of a vector have expected levels
 #'
 #' Check if elements of a vector have expected levels.
-#' This function is used for instance in the `keep_col_w_levels` function to select specific factor columns,
+#' This function is used for instance in the `cln_keep_col_with_levels` function to select specific factor columns,
 #' even in case of case issues.
 #' @inheritParams stringr::str_detect
 #' @param levels Complete set of specific levels seeked for the variables.
@@ -23,15 +23,15 @@
 #' @examples
 #' ## Default: ignore_case = FALSE
 #' vec <- c("Oui", "oui", "Non", "non", "NON", "ouistiti", NA_character_)
-#' clr_detect_levels(vec, levels =  c("Non", "Oui"))
+#' cln_detect_levels(vec, levels =  c("Non", "Oui"))
 #' ## negate = TRUE
-#' clr_detect_levels(vec, levels =  c("Non", "Oui"), negate = TRUE)
+#' cln_detect_levels(vec, levels =  c("Non", "Oui"), negate = TRUE)
 #' ## ignore_case = TRUE
-#' clr_detect_levels(vec, levels =  c("Non", "Oui"), ignore_case = TRUE)
+#' cln_detect_levels(vec, levels =  c("Non", "Oui"), ignore_case = TRUE)
 #' ## Default: ignore_case = FALSE pour +/-
 #' vec <- c("+", "-", "Non", "non", "NON", "ouistiti", NA_character_)
-#' clr_detect_levels(vec, levels =  c("+", "-"))
-clr_detect_levels <- function(string, levels, negate = FALSE, ignore_case = FALSE) {
+#' cln_detect_levels(vec, levels =  c("+", "-"))
+cln_detect_levels <- function(string, levels, negate = FALSE, ignore_case = FALSE) {
   ## transformation en regex en cas de pattern spéciaux (notamment +/-)
   ## maj 2024-04-23: utilisation de stringr::str_escape, plutôt que la fonction développée dans stringa
   # regex_levels <- stringa::stra_transform_to_regex_pattern(levels)
@@ -57,8 +57,8 @@ clr_detect_levels <- function(string, levels, negate = FALSE, ignore_case = FALS
 #   names(data) %>%
 #     purrr::set_names() %>%
 #     purrr::map_lgl(~(
-#       (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
-#         (dplyr::setdiff(data[[.x]], levels) %>% is_only_na())) )%>% ## & elle doit contenir uniquement les niveaux attendus
+#       (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+#         (dplyr::setdiff(data[[.x]], levels) %>% cln_is_only_na())) )%>% ## & elle doit contenir uniquement les niveaux attendus
 #     purrr::keep(.p = ~.x == TRUE) %>%
 #     names()
 # }
@@ -84,13 +84,13 @@ clr_detect_levels <- function(string, levels, negate = FALSE, ignore_case = FALS
 # #'  factor = c("non", "oui"),
 # #'  na_col = rep(NA_real_, times = 2)
 # #' ) %>%
-# #'  keep_col_w_levels(levels = c("non", "oui"))
-# keep_col_w_levels <- function(data, levels) {
+# #'  cln_keep_col_with_levels(levels = c("non", "oui"))
+# cln_keep_col_with_levels <- function(data, levels) {
 #   names(data) %>%
 #     set_names() %>%
 #     map_lgl(~(
-#       (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
-#         (base::setdiff(data[[.x]], levels) %>% is_only_na())) ) %>% ## & elle doit contenir uniquement les niveaux attendus
+#       (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+#         (base::setdiff(data[[.x]], levels) %>% cln_is_only_na())) ) %>% ## & elle doit contenir uniquement les niveaux attendus
 #     keep(.p = ~.x == TRUE) #%>%
 #   ## maj 2024-03-27: the function is modified to get as an output the seeked variables, instead of their names.
 #   ## For sake of consistancy with the other variables of the package
@@ -116,13 +116,13 @@ clr_detect_levels <- function(string, levels, negate = FALSE, ignore_case = FALS
 # #'  factor = c("non", "oui"),
 # #'  na_col = rep(NA_real_, times = 2)
 # #' ) %>%
-# #'  discard_col_w_levels(levels = c("non", "oui"))
-# discard_col_w_levels <- function(data, levels) {
+# #'  cln_discard_col_with_levels(levels = c("non", "oui"))
+# cln_discard_col_with_levels <- function(data, levels) {
 #   names(data) %>%
 #     set_names() %>%
 #     map_lgl(~(
-#       (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
-#         (base::setdiff(data[[.x]], levels) %>% is_only_na())) ) %>% ## & elle doit contenir uniquement les niveaux attendus
+#       (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+#         (base::setdiff(data[[.x]], levels) %>% cln_is_only_na())) ) %>% ## & elle doit contenir uniquement les niveaux attendus
 #     discard(.p = ~.x == TRUE) #%>%
 #   ## maj 2024-03-27: the function is modified to get as an output the seeked variables, instead of their names.
 #   ## For sake of consistancy with the other variables of the package
@@ -156,15 +156,15 @@ clr_detect_levels <- function(string, levels, negate = FALSE, ignore_case = FALS
 #'  na_col = rep(NA_real_, times = 2),
 #'  date = lubridate::make_date(year = c(2019L, 2021L))
 #' ) %>%
-#'  keep_col_w_levels(c("non", "oui"))
-keep_col_w_levels <- function(data, levels, ignore_case = FALSE, id_cols = NULL, fun = c("all", "any")) {
+#'  cln_keep_col_with_levels(c("non", "oui"))
+cln_keep_col_with_levels <- function(data, levels, ignore_case = FALSE, id_cols = NULL, fun = c("all", "any")) {
   fun <- match.arg(fun) %>% match.fun()
   selected <- names(data) %>%
     purrr::set_names() %>%
     purrr::map_lgl(~(
-      (!is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
-        # (all(has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
-        (fun(clr_detect_levels(data[[.x]], levels, ignore_case = ignore_case), na.rm = TRUE) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
+      (!cln_is_only_na(data[[.x]])) && ## la col ne doit pas contenir que des NA
+        # (all(cln_has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
+        (fun(cln_detect_levels(data[[.x]], levels, ignore_case = ignore_case), na.rm = TRUE) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
     purrr::keep(.p = ~.x == TRUE) %>%
     names()
   data %>%
@@ -194,8 +194,8 @@ keep_col_w_levels <- function(data, levels, ignore_case = FALSE, id_cols = NULL,
 #'  factor = c("non", "oui"),
 #'  na_col = rep(NA_real_, times = 2)
 #' ) %>%
-#'  discard_col_w_levels(levels = c("non", "oui"))
-discard_col_w_levels <- function(data, levels, ignore_case = FALSE, id_cols = NULL, fun = c("all", "any")) {
+#'  cln_discard_col_with_levels(levels = c("non", "oui"))
+cln_discard_col_with_levels <- function(data, levels, ignore_case = FALSE, id_cols = NULL, fun = c("all", "any")) {
   ## avec `all` on a les colonnes qui n'ont que les niveaux attendus (à la case près si ignore_case = TRUE)
   ## avec `any` on a les colonnes qui ont que les niveaux attendus (à la case près si ignore_case = TRUE), mais qui peuvent également avoir d'autres niveaux
   ## ce qui peut permettre de repérer les varaibles avec des typos...
@@ -204,9 +204,9 @@ discard_col_w_levels <- function(data, levels, ignore_case = FALSE, id_cols = NU
     purrr::set_names() %>%
     purrr::map_lgl(~(
       ## maj 2024-03-28: contrairement à keep, il faut modifier la ligne ci-dessous pour forcer l'élimination des colonnes ne contenant que des NA
-      (is_only_na(data[[.x]])) || ## la col ne doit pas contenir que des NA
-        # (all(has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
-        (fun(clr_detect_levels(data[[.x]], levels, ignore_case = ignore_case), na.rm = TRUE) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
+      (cln_is_only_na(data[[.x]])) || ## la col ne doit pas contenir que des NA
+        # (all(cln_has_strict_numeric_format(data[[.x]]), na.rm = TRUE))) )%>% ## & elle doit contenir uniquement les niveaux attendus
+        (fun(cln_detect_levels(data[[.x]], levels, ignore_case = ignore_case), na.rm = TRUE) )) ) %>% ## on veut des éléments tous numeric + la colonne n'est pas déjà de type "instant"
     purrr::discard(.p = ~.x == TRUE) %>%
     names()
   data %>%
@@ -239,13 +239,13 @@ discard_col_w_levels <- function(data, levels, ignore_case = FALSE, id_cols = NU
 #'   na_only = rep(NA_character_, times = 4)
 #' )
 #' data_ex %>%
-#'  clr_extract_mismatch_w_levels_case(levels = c("non", "oui"))
+#'  cln_extract_mismatch_with_levels_case(levels = c("non", "oui"))
 #' data_ex %>%
-#'  clr_extract_mismatch_w_levels_case(levels = c("non", "oui"), id_cols = "id")
+#'  cln_extract_mismatch_with_levels_case(levels = c("non", "oui"), id_cols = "id")
 #' data_ex %>%
 #' dplyr::select(-case) %>%
-#'  clr_extract_mismatch_w_levels_case(levels = c("non", "oui"), id_cols = "id")
-clr_extract_mismatch_w_levels_case <- function(data, levels, id_cols = NULL) {
+#'  cln_extract_mismatch_with_levels_case(levels = c("non", "oui"), id_cols = "id")
+cln_extract_mismatch_with_levels_case <- function(data, levels, id_cols = NULL) {
   ## Ajout du numéro de ligne si aucune id_cols n'est définie
   if (is.null(id_cols)) {
     data <- data %>%
@@ -253,9 +253,9 @@ clr_extract_mismatch_w_levels_case <- function(data, levels, id_cols = NULL) {
     id_cols <- "row_number"
   }
   data <- data %>%
-    discard_col_w_levels(levels = levels, id_cols) %>% # discard cols that exactly match the levels expected: no pb with these cols
-    keep_col_w_levels(levels = levels, ignore_case = TRUE, id_cols) %>% # keep only cols with case pb + id_cols
-    dplyr::filter(dplyr::if_any(.cols = -id_cols, .fns = \(x) clr_detect_levels(x, levels = levels, negate = TRUE))) # filter only rows with pb
+    cln_discard_col_with_levels(levels = levels, id_cols) %>% # discard cols that exactly match the levels expected: no pb with these cols
+    cln_keep_col_with_levels(levels = levels, ignore_case = TRUE, id_cols) %>% # keep only cols with case pb + id_cols
+    dplyr::filter(dplyr::if_any(.cols = -id_cols, .fns = \(x) cln_detect_levels(x, levels = levels, negate = TRUE))) # filter only rows with pb
 
   if (NCOL(data) == length(id_cols)) {
     message(paste0("No case issues detected for levels: (", paste(levels, collapse = ", "), ")"))
@@ -288,13 +288,13 @@ clr_extract_mismatch_w_levels_case <- function(data, levels, id_cols = NULL) {
 #'   DB_w_na = c("oui", "non", "non", NA_character_),
 #'   na_only = rep(NA_character_, times = 4)
 #' ) %>%
-#'  clr_extract_mismatch_w_levels_typo(levels = c("non", "oui"))
-clr_extract_mismatch_w_levels_typo <- function(data, levels, id_cols = NULL) {
+#'  cln_extract_mismatch_with_levels_typo(levels = c("non", "oui"))
+cln_extract_mismatch_with_levels_typo <- function(data, levels, id_cols = NULL) {
   data %>%
-    discard_col_w_levels(levels = levels, id_cols) %>%
-    discard_col_w_levels(levels = levels, ignore_case = TRUE, id_cols) %>%
-    keep_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE, id_cols, fun = "any") %>%
-    dplyr::filter(dplyr::if_any(.cols = -id_cols, .fns = \(x) clr_detect_levels(x, levels = levels, negate = TRUE)))
+    cln_discard_col_with_levels(levels = levels, id_cols) %>%
+    cln_discard_col_with_levels(levels = levels, ignore_case = TRUE, id_cols) %>%
+    cln_keep_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE, id_cols, fun = "any") %>%
+    dplyr::filter(dplyr::if_any(.cols = -id_cols, .fns = \(x) cln_detect_levels(x, levels = levels, negate = TRUE)))
 }
 
 
@@ -322,12 +322,12 @@ clr_extract_mismatch_w_levels_typo <- function(data, levels, id_cols = NULL) {
 #' case <- c("OUI", "Non", "non", "oui")
 #' ## single application
 #' case %>%
-#' cure_single_level_case("oui")
+#' cln_fix_single_level_case("oui")
 #' ## pipe of several applications of the function
 #' case %>%
-#' cure_single_level_case("oui") %>%
-#' cure_single_level_case("non")
-cure_single_level_case <- function(string, single_level) {
+#' cln_fix_single_level_case("oui") %>%
+#' cln_fix_single_level_case("non")
+cln_fix_single_level_case <- function(string, single_level) {
   ## maj 2024-04-23: utilisation de stringr::str_escape, plutôt que la fonction développée dans stringa
   regex_level <- stringr::str_escape(single_level)
   stringr::str_replace(
@@ -363,16 +363,16 @@ cure_single_level_case <- function(string, single_level) {
 #'   DB_w_na = c("oui", "non", "non", NA_character_),
 #'   na_only = rep(NA_character_, times = 4)
 #' ) %>%
-#' cure_col_w_levels_case(levels = c("non", "oui"))
-cure_col_w_levels_case <- function(data, levels) {
+#' cln_fix_col_with_levels_case(levels = c("non", "oui"))
+cln_fix_col_with_levels_case <- function(data, levels) {
   col_w_levels_case_issues <- data %>%
-    discard_col_w_levels(levels = levels) %>%
-    keep_col_w_levels(levels = levels, ignore_case = TRUE) %>%
+    cln_discard_col_with_levels(levels = levels) %>%
+    cln_keep_col_with_levels(levels = levels, ignore_case = TRUE) %>%
     names()
   data <- data %>%
     dplyr::mutate(dplyr::across(dplyr::all_of(col_w_levels_case_issues),
                   .fns = \(ci) purrr::reduce(levels,
-                                             .f = \(x, y) cure_single_level_case(string = x, single_level = y),
+                                             .f = \(x, y) cln_fix_single_level_case(string = x, single_level = y),
                                              .init = .data$ci)))
   data
 }
@@ -383,13 +383,13 @@ cure_col_w_levels_case <- function(data, levels) {
 ## ****************************************************************************
 ## Fonction qui se charge de la détection et du recodage en facteur des cols
 ## qui ont uniquement les modalités définies dans levels
-## nécessite keep_col_w_levels de utils-recode.R
+## nécessite cln_keep_col_with_levels de utils-recode.R
 ## maj 2024-03-29: Fonctions qui réalisent le recodage auto de toutes les col qui ont les modalités d'intérêt
 #' Recode columns having specific modalities
 #'
-#' Spot columns having a specific set of levels using `keep_col_w_levels`,
+#' Spot columns having a specific set of levels using `cln_keep_col_with_levels`,
 #' and recode them using the order of the levels in the levels argument.
-# #' @inheritParams keep_col_w_levels
+# #' @inheritParams cln_keep_col_with_levels
 #' @param data input dataset
 #' @param levels complete set of specific levels seeked for the variables
 #' @param ignore_case Should case differences be ignored in the match? For fixed(), this uses a simple algorithm which assumes a one-to-one mapping between upper and lower case letters.
@@ -406,13 +406,13 @@ cure_col_w_levels_case <- function(data, levels) {
 #' y = c("N", "O", "Non", "Oui", "Oui", NA_character_),
 #' z = c("Non", "Oui", "Non", "Oui", "+", NA_character_)
 #' ) %>%
-#'   recode_col_w_levels(levels = c("Non", "Oui"))
+#'   cln_recode_col_with_levels(levels = c("Non", "Oui"))
 #' data.frame(
 #' x = c("Non", "Oui", "Non", "Oui", "Oui", NA_character_),
 #' y = c("N", "O", "Non", "Oui", "Oui", NA_character_),
 #' z = c("Non", "Oui", "Non", "Oui", "+", NA_character_)
 #' ) %>%
-#'   recode_col_w_levels(levels = c("Non", "Oui"), labels = c("N", "O"))
+#'   cln_recode_col_with_levels(levels = c("Non", "Oui"), labels = c("N", "O"))
 #' # Recode the dataset even for columns with case issues in the factors
 #' data.frame(
 #'   id = 1:4,
@@ -425,33 +425,33 @@ cure_col_w_levels_case <- function(data, levels) {
 #'   DB_w_na = c("oui", "non", "non", NA_character_),
 #'   na_only = rep(NA_character_, times = 4)
 #' ) %>%
-#' recode_col_w_levels(levels = c("non", "oui"), ignore_case = TRUE)
+#' cln_recode_col_with_levels(levels = c("non", "oui"), ignore_case = TRUE)
 
 #' \dontrun{
-#' recoded_data <- recode_col_w_levels(data, levels = c("non", "oui"))
-#' recode_col_N_O <- partial(.f = recode_col_w_levels, levels = c("N", "O"))
+#' recoded_data <- cln_recode_col_with_levels(data, levels = c("non", "oui"))
+#' cln_recode_col_non_oui <- partial(.f = cln_recode_col_with_levels, levels = c("N", "O"))
 #' }
-recode_col_w_levels <- function(data, levels, labels = levels, ignore_case = FALSE) {
-  col_w_levels <- keep_col_w_levels(data, levels = levels, ignore_case = ignore_case) %>% names()
+cln_recode_col_with_levels <- function(data, levels, labels = levels, ignore_case = FALSE) {
+  col_w_levels <- cln_keep_col_with_levels(data, levels = levels, ignore_case = ignore_case) %>% names()
   if (isTRUE(ignore_case)) {
     data <- data %>%
-      cure_col_w_levels_case(levels = levels)
+      cln_fix_col_with_levels_case(levels = levels)
   }
   data %>%
     dplyr::mutate(dplyr::across(dplyr::all_of(col_w_levels), \(x) factor(x = x, levels = levels, labels = labels)))
 }
 # ## -> Utilisation
-# recode_col_N_O <- partial(.f = recode_col_w_levels, levels = c("N", "O"))
+# cln_recode_col_non_oui <- partial(.f = cln_recode_col_with_levels, levels = c("N", "O"))
 # df_greffe_parsed %>%
-#   recode_col_N_O()
+#   cln_recode_col_non_oui()
 
 ## specific recoding avec modalités N/O et -/+
-## A partir de "recode_col_w_levels()" définie dans utils-recode.R
+## A partir de "cln_recode_col_with_levels()" définie dans utils-recode.R
 #' Automated recoding of N/O factors
 #'
 #' Automated recoding of N/O factors
 #' @inheritParams purrr::partial
-# #' @inheritParams recode_col_w_levels
+# #' @inheritParams cln_recode_col_with_levels
 #'
 #' @returns a function that automatically recodes N/Y factors
 # #' @importFrom purrr partial
@@ -463,14 +463,14 @@ recode_col_w_levels <- function(data, levels, labels = levels, ignore_case = FAL
 #'   y = c("N", "O", "Non", "Oui", "Oui", NA_character_),
 #'   z = c("Non", "Oui", "Non", "Oui", "+", NA_character_)
 #' ) %>%
-#' recode_col_N_O()
-recode_col_N_O <- purrr::partial(.f = recode_col_w_levels, levels = c("non", "oui"), labels = c("N", "O"))
+#' cln_recode_col_non_oui()
+cln_recode_col_non_oui <- purrr::partial(.f = cln_recode_col_with_levels, levels = c("non", "oui"), labels = c("N", "O"))
 
 #' Automated recoding of -/+ factors
 #'
 #' Automated recoding of -/+ factors
 #' @inheritParams purrr::partial
-# #' @inheritParams recode_col_w_levels
+# #' @inheritParams cln_recode_col_with_levels
 #'
 #' @returns a function that automatically recodes N/Y factors
 # #' @importFrom purrr partial
@@ -481,8 +481,8 @@ recode_col_N_O <- purrr::partial(.f = recode_col_w_levels, levels = c("non", "ou
 #'   x = c("-", "+", "+", NA_character_),
 #'   y = c("-", "O", "+", NA_character_)
 #' ) %>%
-#' recode_col_neg_pos() %>%
+#' cln_recode_col_neg_pos() %>%
 #' purrr::map_chr(class)
-recode_col_neg_pos <- purrr::partial(.f = recode_col_w_levels, levels = c("-", "+"))
-# recode_col_NF_neg_pos <- partial(.f = recode_col_w_levels, levels = c("NF", "-", "+"))
+cln_recode_col_neg_pos <- purrr::partial(.f = cln_recode_col_with_levels, levels = c("-", "+"))
+# recode_col_NF_neg_pos <- partial(.f = cln_recode_col_with_levels, levels = c("NF", "-", "+"))
 

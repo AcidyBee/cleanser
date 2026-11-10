@@ -1,69 +1,69 @@
 ## ****************************************************************************
-## is_dummy()
+## cln_is_dummy()
 
-test_that("is_dummy() works for vectors containing at least one dummy values (0/1): return TRUE", {
-  testthat::expect_true(c(0, 1, 0, 1)  %>%  is_dummy())
-  testthat::expect_true(c(0, 0, 0) %>% is_dummy())
-  testthat::expect_true(c(1, 1, 1) %>% is_dummy())
+test_that("cln_is_dummy() works for vectors containing at least one dummy values (0/1): return TRUE", {
+  testthat::expect_true(c(0, 1, 0, 1)  %>%  cln_is_dummy())
+  testthat::expect_true(c(0, 0, 0) %>% cln_is_dummy())
+  testthat::expect_true(c(1, 1, 1) %>% cln_is_dummy())
 })
 
-test_that("is_dummy() works for vectors containing at least one dummy values (0/1) and NA: return TRUE", {
-  testthat::expect_true(c(0, 1, NA_real_, 1) %>% is_dummy())
-  testthat::expect_true(c(0, NA_real_, 0) %>% is_dummy())
-  testthat::expect_true(c(1, NA_real_, 1) %>% is_dummy())
+test_that("cln_is_dummy() works for vectors containing at least one dummy values (0/1) and NA: return TRUE", {
+  testthat::expect_true(c(0, 1, NA_real_, 1) %>% cln_is_dummy())
+  testthat::expect_true(c(0, NA_real_, 0) %>% cln_is_dummy())
+  testthat::expect_true(c(1, NA_real_, 1) %>% cln_is_dummy())
 })
 
-test_that("is_dummy() works for vectors containing character type dummy values: return TRUE", {
-  testthat::expect_true(c("0", "1", NA_character_) %>% is_dummy())
-  testthat::expect_true(c("0", NA_character_, "0") %>% is_dummy())
-  testthat::expect_true(c("1", NA_character_, "1") %>% is_dummy())
-  testthat::expect_true(c("0", "1", NA_character_) %>% factor() %>% is_dummy())
+test_that("cln_is_dummy() works for vectors containing character type dummy values: return TRUE", {
+  testthat::expect_true(c("0", "1", NA_character_) %>% cln_is_dummy())
+  testthat::expect_true(c("0", NA_character_, "0") %>% cln_is_dummy())
+  testthat::expect_true(c("1", NA_character_, "1") %>% cln_is_dummy())
+  testthat::expect_true(c("0", "1", NA_character_) %>% factor() %>% cln_is_dummy())
 })
 
-test_that("is_dummy() works for vectors containing no dummy values (0/1): return FALSE", {
-  testthat::expect_false(c(8, 7, NA_real_) %>% is_dummy())
-  testthat::expect_false(c("8", "7", NA_character_) %>% is_dummy())
-  testthat::expect_false(c("a", "b", NA_character_) %>% is_dummy())
-  testthat::expect_false(c("a", "b", NA_character_) %>% factor() %>% is_dummy())
+test_that("cln_is_dummy() works for vectors containing no dummy values (0/1): return FALSE", {
+  testthat::expect_false(c(8, 7, NA_real_) %>% cln_is_dummy())
+  testthat::expect_false(c("8", "7", NA_character_) %>% cln_is_dummy())
+  testthat::expect_false(c("a", "b", NA_character_) %>% cln_is_dummy())
+  testthat::expect_false(c("a", "b", NA_character_) %>% factor() %>% cln_is_dummy())
 })
 
-test_that("is_dummy() works for vectors containing at the same time dummy values (0/1) as well as other values: return FALSE", {
-  testthat::expect_false(c(0, 1, NA_real_, 5, 0, 1) %>% is_dummy())
+test_that("cln_is_dummy() works for vectors containing at the same time dummy values (0/1) as well as other values: return FALSE", {
+  testthat::expect_false(c(0, 1, NA_real_, 5, 0, 1) %>% cln_is_dummy())
 })
 
 ## TODO: coherce logical to numeric, or not ?
-test_that("is_dummy works for vectors of logical: return FALSE", {
-  testthat::expect_false(c(FALSE, TRUE, NA, TRUE) %>% is_dummy())
-  testthat::expect_false(c(FALSE, NA, FALSE) %>% is_dummy())
-  testthat::expect_false(c(TRUE, NA, TRUE) %>% is_dummy())
+test_that("cln_is_dummy works for vectors of logical: return FALSE", {
+  testthat::expect_false(c(FALSE, TRUE, NA, TRUE) %>% cln_is_dummy())
+  testthat::expect_false(c(FALSE, NA, FALSE) %>% cln_is_dummy())
+  testthat::expect_false(c(TRUE, NA, TRUE) %>% cln_is_dummy())
 })
 
-test_that("is_dummy works for vectors containing only NA: return FALSE", {
-  testthat::expect_false(c(NA_real_, NA_real_, NA_real_) %>% is_dummy())
+test_that("cln_is_dummy works for vectors containing only NA: return FALSE", {
+  testthat::expect_false(c(NA_real_, NA_real_, NA_real_) %>% cln_is_dummy())
 })
 
 ## ****************************************************************************
-## detect_dummy()
+## cln_detect_dummy()
 
-test_that("detect_dummy() finds dummy elements (0/1) in a vector: return TRUE & FALSE", {
+test_that("cln_detect_dummy() finds dummy elements (0/1) in a vector: return TRUE & FALSE", {
   testthat::expect_equal(
-    c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(na_valid = TRUE),
+    c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(na_valid = TRUE),
     c(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE)
   )
   testthat::expect_equal(
-    c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(na_valid = TRUE, negate = TRUE),
+    c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(na_valid = TRUE, negate = TRUE),
     c(FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE)
   )
   testthat::expect_equal(
-    c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(na_valid = FALSE),
+    c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(na_valid = FALSE),
     c(TRUE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE)
   )
 })
 
 ## ****************************************************************************
-## dummify()
+## cln_dummify()
 
-test_that("dummify works for columns of datasets of any type", {
+test_that("cln_dummify works for columns of datasets of any type", {
   dataset <- data.frame(
     id = 1:6,
     char = c("Non", "Oui", "Non", "Oui", "Oui", NA_character_),
@@ -72,7 +72,7 @@ test_that("dummify works for columns of datasets of any type", {
     logical = c(FALSE, TRUE, FALSE, TRUE, TRUE, NA)
   )
   testthat::expect_equal(
-    dummify(dataset, "char"),
+    cln_dummify(dataset, "char"),
     structure(list(
       id = 1:6,
       char = c("Non", "Oui", "Non", "Oui", "Oui", NA),
@@ -84,7 +84,7 @@ test_that("dummify works for columns of datasets of any type", {
       class = "data.frame", row.names = c(NA, -6L))
   )
   testthat::expect_equal(
-    dummify(dataset, "factor"),
+    cln_dummify(dataset, "factor"),
     structure(list(
       id = 1:6,
       char = c("Non", "Oui", "Non", "Oui", "Oui", NA),
@@ -97,7 +97,7 @@ test_that("dummify works for columns of datasets of any type", {
       class = "data.frame", row.names = c(NA, -6L))
   )
   testthat::expect_equal(
-    dummify(dataset, "numeric"),
+    cln_dummify(dataset, "numeric"),
     structure(list(
       id = 1:6,
       char = c("Non", "Oui", "Non", "Oui",  "Oui", NA),
@@ -111,7 +111,7 @@ test_that("dummify works for columns of datasets of any type", {
       class = "data.frame", row.names = c(NA, -6L))
   )
   testthat::expect_equal(
-    dummify(dataset, "logical"),
+    cln_dummify(dataset, "logical"),
     structure(list(
       id = 1:6,
       char = c("Non", "Oui", "Non", "Oui", "Oui", NA),
@@ -124,7 +124,7 @@ test_that("dummify works for columns of datasets of any type", {
       class = "data.frame", row.names = c(NA, -6L))
     )
   testthat::expect_equal(
-    dummify(dataset, "logical", dummy_code = c("non", "oui")),
+    cln_dummify(dataset, "logical", dummy_code = c("non", "oui")),
     structure(list(
       id = 1:6,
       char = c("Non", "Oui", "Non", "Oui", "Oui", NA),

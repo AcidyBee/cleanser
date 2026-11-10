@@ -11,7 +11,7 @@
 #'
 #' Check if a vector is only dummy elements (i.e. 0/1).
 #' This function has 2 direct applications on data structures in the package:
-#' 1. spot dummy columns using data %>% purrr::keep(\(x) is_dummy(x)) %>% names()
+#' 1. spot dummy columns using data %>% purrr::keep(\(x) cln_is_dummy(x)) %>% names()
 #' 2. it could be used to select only dummy columns in a dataset (see exemples)
 # #' @importFrom stats na.omit
 #' @param x a vector of any type. `x` has his NA elements discarded before it
@@ -24,15 +24,15 @@
 #'
 #' @examples
 #' c(1, 7, NA_real_) %>%
-#'   is_dummy()
+#'   cln_is_dummy()
 #' c(0, 1, NA_real_) %>%
-#'   is_dummy()
-# is_dummy(c(0, 1, NA_real_, 5, 0, 1))
-# is_dummy( c(0, 1, NA_real_, 0, 1))
-# is_dummy(c(0, NA_real_, 0))
-# is_dummy(c(1, NA_real_, 1))
+#'   cln_is_dummy()
+# cln_is_dummy(c(0, 1, NA_real_, 5, 0, 1))
+# cln_is_dummy( c(0, 1, NA_real_, 0, 1))
+# cln_is_dummy(c(0, NA_real_, 0))
+# cln_is_dummy(c(1, NA_real_, 1))
 # ## la coercion est effectuée automatiquement vers les character
-# is_dummy(c("0", "1", NA_character_))
+# cln_is_dummy(c("0", "1", NA_character_))
 #' # keep only dummy columns names
 #' data.frame(
 #'  num = c(1, 2),
@@ -40,7 +40,7 @@
 #'  char = c("a", NA_character_),
 #'  na_col = rep(NA_real_, times = 2)
 #' ) %>%
-#'  purrr::keep(\(x) is_dummy(x)) %>%
+#'  purrr::keep(\(x) cln_is_dummy(x)) %>%
 #'  names()
 #' # keep only numeric columns that are not dummy
 #' data.frame(
@@ -50,8 +50,8 @@
 #'  na_col = rep(NA_real_, times = 2)
 #' ) %>%
 #'  dplyr::select(dplyr::where(is.numeric)) %>%
-#'  dplyr::select(!dplyr::where(is_dummy))
-is_dummy <- function(x) {
+#'  dplyr::select(!dplyr::where(cln_is_dummy))
+cln_is_dummy <- function(x) {
   # x_unique <- x %>%
   #   na.omit() %>%
   #   unique() %>%
@@ -61,7 +61,7 @@ is_dummy <- function(x) {
   ## sans pipe et sans le sort (qui ne parait pas utile)
   x_unique <- as.character(unique(stats::na.omit(x)))
   # sum(!x_unique %in% c("0", "1")) == 0
-  all(x_unique %in% c("0", "1")) && !is_only_na(x_unique) # on ne veut pas que le vecteur soit étiqueté comme dummy s'il ne contient que des NA
+  all(x_unique %in% c("0", "1")) && !cln_is_only_na(x_unique) # on ne veut pas que le vecteur soit étiqueté comme dummy s'il ne contient que des NA
 }
 
 ## ****************************************************************************
@@ -74,14 +74,14 @@ is_dummy <- function(x) {
 #' @param na_valid Is NA a valid element to be added to the dummy values 0/1, defaults to TRUE.
 #' @param negate If TRUE, inverts the resulting boolean vector, defaults to FALSE
 #'
-#' @returns detect_dummy() returns a logical vector with TRUE for each element of string that matches pattern and FALSE otherwise.
+#' @returns cln_detect_dummy() returns a logical vector with TRUE for each element of string that matches pattern and FALSE otherwise.
 #' @export
 #'
 #' @examples
-#' c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(na_valid = FALSE)
-#' c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(na_valid = TRUE)
-#' c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(negate = TRUE)
-detect_dummy <- function(x, na_valid = TRUE, negate = FALSE) {
+#' c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(na_valid = FALSE)
+#' c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(na_valid = TRUE)
+#' c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(negate = TRUE)
+cln_detect_dummy <- function(x, na_valid = TRUE, negate = FALSE) {
   if(isFALSE(na_valid)) {
     x_logical <- as.character(x) %in% c("0", "1")
   } else {
@@ -93,9 +93,9 @@ detect_dummy <- function(x, na_valid = TRUE, negate = FALSE) {
   x_logical
 }
 # ## Vérification OK
-# c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(na_valid = FALSE)
-# c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(na_valid = TRUE)
-# c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% detect_dummy(negate = TRUE)
+# c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(na_valid = FALSE)
+# c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(na_valid = TRUE)
+# c(0, 1, NA, 5, 0, 1, 0.0000000001, 1.0000000001) %>% cln_detect_dummy(negate = TRUE)
 
 
 ## ****************************************************************************
@@ -112,8 +112,8 @@ detect_dummy <- function(x, na_valid = TRUE, negate = FALSE) {
 #'   Any type of character variable is allowed.
 # #' @importFrom dplyr mutate row_number arrange select all_of enquo .data full_join relocate matches
 # #' @importFrom tidyr pivot_wider
-#' @param data a dataset containing the column to dummify.
-#' @param names_from the name of the variable to dummify.
+#' @param data a dataset containing the column to cln_dummify.
+#' @param names_from the name of the variable to cln_dummify.
 #' @param dummy_code optional length 2 vector giving the dummy coding (i.e. `0` and `1` modalities).
 #'   Defaults to c(0, 1), but can be conveniently switched to c("no", "yes")
 #'   to identify factor categories for instance.
@@ -128,16 +128,16 @@ detect_dummy <- function(x, na_valid = TRUE, negate = FALSE) {
 #'   logical = c(FALSE, TRUE, FALSE, TRUE, TRUE, NA)
 #' )
 #' # char
-#' dummify(dataset, "char")
+#' cln_dummify(dataset, "char")
 #' # factor
-#' dummify(dataset, "factor")
+#' cln_dummify(dataset, "factor")
 #' # numeric
-#' dummify(dataset, "numeric")
+#' cln_dummify(dataset, "numeric")
 #' # logical
-#' dummify(dataset, "logical")
+#' cln_dummify(dataset, "logical")
 #' # with non/oui instead of 0/1
-#' dummify(dataset, "logical", dummy_code = c("non", "oui"))
-dummify <- function(data, names_from, dummy_code = c(0, 1)){ # , id_cols = NULL
+#' cln_dummify(dataset, "logical", dummy_code = c("non", "oui"))
+cln_dummify <- function(data, names_from, dummy_code = c(0, 1)){ # , id_cols = NULL
   # name_prefix <- ensym(names_from)
   ## Création d'identifiants pour conserver l'ordre initial + ordonner les variables dans l'ordre des facteurs (pour les variables factor)
   data <- data %>%
